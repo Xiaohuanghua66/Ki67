@@ -78,16 +78,42 @@ pleural_tags = st.sidebar.selectbox("Pleural Tags:",
                                   options=list(pleural_tags_options.keys()),
                                   format_func=lambda x: pleural_tags_options[x])
 
-intraperi = st.sidebar.number_input("INTRAPERI_0-10mm:", 
-                                  min_value=0.0, max_value=10.0, value=5.0)
+intraperi = st.sidebar.number_input(
+    "INTRAPERI_0-10mm (×10³ HU·mm):", 
+    min_value=-3500.0,
+    max_value=1200000.0,
+    value=500.0,  # 默认值
+    step=1000.0,  # 步长设为1000方便调节
+    format="%.0f",  # 整数格式显示
+    help="Value range: -3,500 to 1,200,000 (unit: HU·mm)"
+)
 
-resnet_roi = st.sidebar.number_input("Resnet101_ROI Score:",
-                                   min_value=0.0, max_value=1.0, value=0.5)
+resnet_roi = st.sidebar.number_input(
+    "Resnet101_ROI Score:", 
+    min_value=0.1,
+    max_value=0.4,
+    value=0.25,  # 默认值
+    step=1e-9,    # 允许小数点后9位调节
+    format="%.9f",  # 显示9位小数
+    help="Precise value between 0.100000000 and 0.400000000"
+)
 
 # Process the input and make prediction
-feature_values = [age, smoking, surgical_history, emphysema, tumor_indicators,
-                 location, lobulation, spiculation, airspace, air_bronchogram,
-                 pleural_tags, intraperi, resnet_roi]
+feature_values = [
+    age, 
+    smoking,
+    surgical_history,
+    emphysema,
+    tumor_indicators,
+    location,
+    lobulation,
+    spiculation,
+    airspace,
+    air_bronchogram,
+    pleural_tags,
+    float(intraperi),  # 显式转换为float
+    float("{:.9f}".format(resnet_roi))  # 确保9位精度
+]
 
 features = np.array([feature_values])
 
